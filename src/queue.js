@@ -7,25 +7,23 @@ class PriorityQueue {
 	}
 
 	push(data, priority) {
-		if(this.heap.parentNodes != null && this.heap.parentNodes.length == this.maxSize) throw new Error('Error');
+		if(this.size() >= this.maxSize) throw new Error('Error!');
 		this.heap.push(data, priority);
 	}
 
 	shift() {
-		this.heap.pop();
-		
+		if(this.heap.isEmpty()) throw new Error('Error!');
+		return this.heap.pop();
 	}
 
 	size() {
-		return this.heap.parentNodes.length;
+		return this.heap.size();
 	}
 
 	isEmpty() {
-		if(this.parentNodes.length) {
-			return false;
-		}
-		return true;
+		return this.heap.isEmpty();
 	}
 }
 
 module.exports = PriorityQueue;
+

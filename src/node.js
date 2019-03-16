@@ -1,56 +1,93 @@
 class Node {
 	constructor(data, priority) {
+		this.priority = priority;
+		this.data = data;
 		[this.parent, this.left, this.right] = Array(3).fill(null);
-		Object.assign(this, { data, priority });
+		
 	}
 
 	appendChild(node) {
-		if (this.left == null) {
+		if(this.left == null) {
 			this.left = node;
 			node.parent = this;
 			return;
-		} else if (this.right == null) {
+		} 
+		if(this.right == null) {
 			this.right = node;
 			node.parent = this;
 			return;
 		}
-		return;
 	}
 
 	removeChild(node) {
-		if (this.left != node && this.right != node) throw new Error("Error: parent doesn't have this child");
-		if (this.left == node) this.left = null;
-		if (this.right == node) this.right = null;
-		node.parent = null;
+		if (this.left === node) {
+			this.left = null;
+			node.parent = null;
+			return;
+		} else if (this.right === node) {
+			this.right = null;
+			node.parent = null;
+			return;
+		}
+		throw new Error('Error')
+
 	}
 
 	remove() {
-		if (this.parent == null) return;
-		this.parent.removeChild(this);
+		if (this.parent != null) this.parent.removeChild(this);
 	}
 
 	swapWithParent() {
-		if (this.parent == null) return;
+		if(this.parent !== null){
+			let child = this;
+			let parent = this.parent;
+			let grandparent = this.parent.parent;
+			let grandsonLeft = (this.left === null) ? null : child.left;
+			let grandsonRight = (this.right === null) ? null : child.right;
+			
+			if(grandsonLeft !== null){
+				child.removeChild(grandsonLeft);
+			} 
 
-		let grandson = this;
-		let child = this.parent;
-		let root = this.parent.parent;
+			if(grandsonRight !== null){
+				child.removeChild(grandsonRight);
+			}
 
-		child.removeChild(grandson);
-		if(root != null) root.removeChild(child);
-		
-		let sonsGr = [grandson.left, grandson.right];
-		let sonsCh = [child.left, child.right];
-		[grandson.left, grandson.right] = sonsCh;
-		[child.left, child.right] = sonsGr;
-		if(grandson.left != null) grandson.left.parent = grandson;
-		if(grandson.right != null) grandson.right.parent = grandson;
-		if(child.left != null) child.left.parent = child;
-		if(child.right != null) child.right.parent = child;
+			if(parent.left === child){
+				let rightBrother = parent.right !== null ? parent.right : null;
+				child.appendChild(parent);
+				if(rightBrother !== null){
+					parent.removeChild(rightBrother);
+					child.appendChild(rightBrother);
+				} 
+				parent.removeChild(child);
+			}
 
-		grandson.appendChild(child);
-		if(root != null) root.appendChild(grandson);
+			if(parent.right === child){
+				let leftBrother = parent.left !== null ? parent.left : null;
+				if(leftBrother !== null){
+					parent.removeChild(leftBrother);
+					child.appendChild(leftBrother);
+				} 
+				child.appendChild(parent);
+				parent.removeChild(child);
+			}
 
+			if(grandparent !== null){
+				grandparent.removeChild(parent);
+				parent.parent = child;
+				grandparent.appendChild(child)
+			} 
+
+			if(grandsonLeft !== null){
+				parent.appendChild(grandsonLeft);
+			}
+
+			if(grandsonRight !== null){
+				parent.appendChild(grandsonRight);
+			} 
+			
+		}
 	}
 }
 
